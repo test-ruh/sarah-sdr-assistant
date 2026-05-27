@@ -1,0 +1,9 @@
+{
+  "id": "schedule-campaign-actions",
+  "requires": { "bins": ["bash", "python3"], "env": ["RUN_ID", "PG_CONNECTION_STRING"] },
+  "inputPath": "/tmp/generate-email-sequence_${RUN_ID}.json",
+  "outputPath": "/tmp/schedule-campaign-actions_${RUN_ID}.json",
+  "dependsOn": ["generate-email-sequence"],
+  "dbWrites": ["result_scheduled_actions"],
+  "forbidden": ["raw_sql", "hardcoded_secret"]
+}

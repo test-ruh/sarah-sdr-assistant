@@ -1,0 +1,211 @@
+version: "1.0"
+agent_id: sarah
+
+tables:
+  result_campaigns:
+    description: Campaign artifact and configuration for SDR outreach.
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+      run_id:
+        type: string
+      computed_at:
+        type: datetime
+      name:
+        type: string
+      status:
+        type: string
+      owner_context:
+        type: jsonb
+      configuration:
+        type: jsonb
+      created_at:
+        type: datetime
+      updated_at:
+        type: datetime
+    conflict_columns:
+      - id
+  result_icp_criteria:
+    description: ICP definition and validation status for a campaign.
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+      run_id:
+        type: string
+      computed_at:
+        type: datetime
+      campaign_id:
+        type: uuid
+      criteria:
+        type: jsonb
+      validation_status:
+        type: string
+      created_at:
+        type: datetime
+      updated_at:
+        type: datetime
+    conflict_columns:
+      - id
+  result_prospects:
+    description: Approved prospects and approval status for a campaign.
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+      run_id:
+        type: string
+      computed_at:
+        type: datetime
+      campaign_id:
+        type: uuid
+      email:
+        type: string
+      name:
+        type: string
+      company:
+        type: string
+      profile:
+        type: jsonb
+      approval_status:
+        type: string
+      created_at:
+        type: datetime
+      updated_at:
+        type: datetime
+    conflict_columns:
+      - id
+  result_email_sequences:
+    description: "Email sequence subject, body, timing, and approval status."
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+      run_id:
+        type: string
+      computed_at:
+        type: datetime
+      campaign_id:
+        type: uuid
+      step_number:
+        type: integer
+      subject:
+        type: string
+      body:
+        type: text
+      timing:
+        type: jsonb
+      approval_status:
+        type: string
+      created_at:
+        type: datetime
+      updated_at:
+        type: datetime
+    conflict_columns:
+      - id
+  result_scheduled_actions:
+    description: "Scheduled sends and follow-ups for approved campaign sequences."
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+      run_id:
+        type: string
+      computed_at:
+        type: datetime
+      campaign_id:
+        type: uuid
+      prospect_id:
+        type: uuid
+      sequence_id:
+        type: uuid
+      action_type:
+        type: string
+      scheduled_at:
+        type: datetime
+      status:
+        type: string
+      created_at:
+        type: datetime
+      updated_at:
+        type: datetime
+    conflict_columns:
+      - id
+  result_outbound_sends:
+    description: Email send tracking with provider message IDs and status.
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+      run_id:
+        type: string
+      computed_at:
+        type: datetime
+      campaign_id:
+        type: uuid
+      prospect_id:
+        type: uuid
+      sequence_id:
+        type: uuid
+      scheduled_action_id:
+        type: uuid
+      email_api_message_id:
+        type: string
+      send_status:
+        type: string
+      sent_at:
+        type: datetime
+      metadata:
+        type: jsonb
+    conflict_columns:
+      - id
+  result_replies:
+    description: Prospect reply history and review status.
+    writable: true
+    write_mode: upsert
+    columns:
+      id:
+        type: uuid
+        primary_key: true
+        required: true
+      run_id:
+        type: string
+      computed_at:
+        type: datetime
+      campaign_id:
+        type: uuid
+      prospect_id:
+        type: uuid
+      outbound_send_id:
+        type: uuid
+      email_api_reply_id:
+        type: string
+      reply_body:
+        type: text
+      received_at:
+        type: datetime
+      review_status:
+        type: string
+      created_at:
+        type: datetime
+    conflict_columns:
+      - id

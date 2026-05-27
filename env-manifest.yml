@@ -1,0 +1,79 @@
+infrastructure:
+  - key: PG_CONNECTION_STRING
+    label: OpenClaw PostgreSQL connection
+    required: false
+    secret: true
+    platform_managed: true
+    description: "OpenClaw-managed PostgreSQL connection used by result-table writes."
+  - key: ORG_ID
+    label: OpenClaw organization ID
+    required: false
+    secret: false
+    platform_managed: true
+    description: OpenClaw organization identifier supplied by the platform.
+  - key: AGENT_ID
+    label: OpenClaw agent ID
+    required: false
+    secret: false
+    platform_managed: true
+    description: OpenClaw agent identifier supplied by the platform.
+  - key: RUN_ID
+    label: OpenClaw run ID
+    required: false
+    secret: false
+    platform_managed: true
+    description: OpenClaw run identifier supplied by the platform for each workflow run.
+connector:
+  - key: PLATFORM_PROSPECT_DB_URL
+    label: Platform prospect database URL
+    required: true
+    secret: false
+    platform_managed: true
+    description: "OpenClaw platform-managed prospect database endpoint Sarah uses to retrieve campaign-matched prospects."
+  - key: PLATFORM_PROSPECT_DB_API_KEY
+    label: Platform prospect database API key
+    required: false
+    secret: true
+    platform_managed: true
+    description: "Optional OpenClaw platform-managed API key for the prospect database, when the endpoint requires one."
+  - key: EMAIL_API_BASE_URL
+    label: Email API base URL
+    required: true
+    secret: false
+    platform_managed: false
+    description: Base URL for the Email API used to send approved campaign emails and receive reply events.
+    how_to_get_steps:
+      - "Open https://www.emailapi.com/ in your browser"
+      - Sign in to your Email API account and open developer settings
+      - Find the API base URL for your workspace or environment
+      - Copy the API base URL and paste it into the field above.
+    site_url: "https://www.emailapi.com/"
+    provider_doc_url: "https://www.emailapi.com/docs"
+  - key: EMAIL_API_KEY
+    label: Email API key
+    required: true
+    secret: true
+    platform_managed: false
+    description: API key for sending campaign emails and reading prospect replies through the Email API.
+    how_to_get_steps:
+      - "Open https://www.emailapi.com/ in your browser"
+      - Sign in to your Email API account and open developer settings
+      - Create or open an API key with permission to send email and read reply events
+      - Copy the API key and paste it into the field above.
+    site_url: "https://www.emailapi.com/"
+    provider_doc_url: "https://www.emailapi.com/docs"
+channel:
+  - key: SLACK_BOT_TOKEN
+    label: Slack bot token
+    required: true
+    secret: true
+    platform_managed: false
+    description: "Slack bot token used for campaign setup inputs, approval prompts, status updates, coordination, and reply review notifications."
+    how_to_get_steps:
+      - "Open https://api.slack.com/apps in your browser"
+      - Select the Slack app for Sarah or create one for your workspace
+      - "Click OAuth & Permissions in the left sidebar"
+      - Click Install to Workspace if the app is not installed yet
+      - Copy the Bot User OAuth Token and paste it into the field above.
+    site_url: "https://slack.com"
+    provider_doc_url: "https://api.slack.com/authentication/token-types#bot"

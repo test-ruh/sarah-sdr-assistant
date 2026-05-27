@@ -1,0 +1,9 @@
+{
+  "id": "manage-prospect-approval",
+  "requires": { "bins": ["bash", "python3"], "env": ["RUN_ID", "PG_CONNECTION_STRING", "PLATFORM_PROSPECT_DB_URL"] },
+  "inputPath": "/tmp/validate-campaign-artifact_${RUN_ID}.json",
+  "outputPath": "/tmp/manage-prospect-approval_${RUN_ID}.json",
+  "dependsOn": ["validate-campaign-artifact"],
+  "dbWrites": ["result_prospects"],
+  "forbidden": ["raw_sql", "hardcoded_secret"]
+}

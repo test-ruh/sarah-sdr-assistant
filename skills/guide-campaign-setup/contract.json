@@ -1,0 +1,9 @@
+{
+  "id": "guide-campaign-setup",
+  "requires": { "bins": ["bash", "python3"], "env": ["RUN_ID"] },
+  "inputPath": "/dev/stdin",
+  "outputPath": "/tmp/guide-campaign-setup_${RUN_ID}.json",
+  "dependsOn": [],
+  "dbWrites": [],
+  "forbidden": ["raw_sql", "hardcoded_secret"]
+}

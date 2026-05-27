@@ -1,0 +1,9 @@
+{
+  "id": "send-campaign-email",
+  "requires": { "bins": ["bash", "python3"], "env": ["RUN_ID", "EMAIL_API_BASE_URL", "EMAIL_API_KEY", "PG_CONNECTION_STRING"] },
+  "inputPath": "/tmp/schedule-campaign-actions_${RUN_ID}.json",
+  "outputPath": "/tmp/send-campaign-email_${RUN_ID}.json",
+  "dependsOn": ["schedule-campaign-actions"],
+  "dbWrites": ["result_outbound_sends"],
+  "forbidden": ["raw_sql", "hardcoded_secret"]
+}

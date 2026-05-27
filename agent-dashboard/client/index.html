@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" data-theme="claw">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Dashboard</title>
+    <script>
+      // Iframe theme bootstrap — applied BEFORE React mounts to prevent
+      // a flash of the wrong theme on first paint. Parent agent-builder
+      // platform passes its current theme via URL params when constructing
+      // the iframe src. The IframeThemeSync React component (see
+      // src/lib/iframe-theme-sync.tsx) then handles live updates via
+      // APP_THEME_CHANGED postMessage.
+      (function () {
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var theme = params.get("theme");
+          var resolved = params.get("resolvedTheme");
+          var effective =
+            theme === "light" || theme === "dark"
+              ? theme
+              : resolved === "light" || resolved === "dark"
+              ? resolved
+              : null;
+          if (!effective) return;
+          var root = document.documentElement;
+          root.classList.toggle("dark", effective === "dark");
+          root.setAttribute("data-theme-mode", effective);
+          // Seed next-themes localStorage so ThemeProvider picks up the
+          // parent-resolved light/dark mode instead of the iframe OS theme.
+          try {
+            localStorage.setItem("theme", effective);
+          } catch (_) {
+            /* localStorage may be disabled in some iframe sandboxes */
+          }
+        } catch (_) {
+          /* noop — if anything fails here, ThemeProvider defaults take over */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

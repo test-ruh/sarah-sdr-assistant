@@ -1,0 +1,16 @@
+{
+  "name": "email-reply-received",
+  "enabled": true,
+  "schedule": {
+    "kind": "cron",
+    "expr": "*/5 * * * *",
+    "tz": "UTC"
+  },
+  "sessionTarget": "main",
+  "wakeMode": "event",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Email API reply payload with message ID, campaign and prospect correlation data, reply body, and received time.",
+    "timeoutSeconds": 600
+  }
+}

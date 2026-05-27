@@ -1,0 +1,9 @@
+{
+  "id": "review-replies",
+  "requires": { "bins": ["bash", "python3"], "env": ["RUN_ID"] },
+  "inputPath": "/tmp/capture-email-replies_${RUN_ID}.json",
+  "outputPath": "/tmp/review-replies_${RUN_ID}.json",
+  "dependsOn": ["capture-email-replies"],
+  "dbWrites": [],
+  "forbidden": ["raw_sql", "hardcoded_secret"]
+}

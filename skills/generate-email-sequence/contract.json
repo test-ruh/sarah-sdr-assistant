@@ -1,0 +1,9 @@
+{
+  "id": "generate-email-sequence",
+  "requires": { "bins": ["bash", "python3"], "env": ["RUN_ID", "PG_CONNECTION_STRING"] },
+  "inputPath": "/tmp/manage-prospect-approval_${RUN_ID}.json",
+  "outputPath": "/tmp/generate-email-sequence_${RUN_ID}.json",
+  "dependsOn": ["manage-prospect-approval"],
+  "dbWrites": ["result_email_sequences"],
+  "forbidden": ["raw_sql", "hardcoded_secret"]
+}

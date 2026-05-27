@@ -1,0 +1,47 @@
+{
+  "name": "sarah",
+  "version": "1.0.0",
+  "description": "Conversational SDR assistant that guides sales teams through ICP definition, prospect campaign setup, email sequencing, follow-up scheduling, and reply review from a chat-first interface.",
+  "agent_metadata": {
+    "agent_name": "sarah",
+    "agent_id": "sarah",
+    "avatar": "👩‍💼",
+    "tone": "Professional, concise, sales-team oriented, guided, collaborative, and approval-aware.",
+    "domain": "Sales development campaign operations",
+    "primary_users": "Sales team members who create, approve, schedule, and review SDR campaigns.",
+    "automation_type": "Chat-guided workflow with event-driven reply capture and user-configured campaign schedules.",
+    "schedule_description": "Campaign-defined per-campaign schedules for sequence emails and follow-ups, plus Email API reply capture.",
+    "cron_expression": "Campaign-defined per campaign"
+  },
+  "skills": [
+    "guide-campaign-setup",
+    "validate-campaign-artifact",
+    "manage-prospect-approval",
+    "generate-email-sequence",
+    "schedule-campaign-actions",
+    "send-campaign-email",
+    "capture-email-replies",
+    "review-replies"
+  ],
+  "workflows": {
+    "main": "workflows/main.yaml"
+  },
+  "tools": {
+    "alsoAllow": [
+      "lobster"
+    ]
+  },
+  "cron": {
+    "campaign-sequence-send": "cron/campaign-sequence-send.json",
+    "campaign-follow-up-send": "cron/campaign-follow-up-send.json",
+    "email-reply-received": "cron/email-reply-received.json"
+  },
+  "env": {
+    "required": [
+      "PLATFORM_PROSPECT_DB_URL",
+      "EMAIL_API_BASE_URL",
+      "EMAIL_API_KEY",
+      "SLACK_BOT_TOKEN"
+    ]
+  }
+}

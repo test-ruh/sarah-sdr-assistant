@@ -1,0 +1,9 @@
+{
+  "id": "validate-campaign-artifact",
+  "requires": { "bins": ["bash", "python3"], "env": ["RUN_ID", "PG_CONNECTION_STRING"] },
+  "inputPath": "/tmp/guide-campaign-setup_${RUN_ID}.json",
+  "outputPath": "/tmp/validate-campaign-artifact_${RUN_ID}.json",
+  "dependsOn": ["guide-campaign-setup"],
+  "dbWrites": ["result_campaigns", "result_icp_criteria"],
+  "forbidden": ["raw_sql", "hardcoded_secret"]
+}

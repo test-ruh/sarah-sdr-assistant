@@ -1,0 +1,79 @@
+name: main
+args:
+  run_id:
+    default: $(uuidgen)
+env:
+  RUN_ID: ${run_id}
+  PG_CONNECTION_STRING: ${PG_CONNECTION_STRING}
+  ORG_ID: ${ORG_ID}
+  AGENT_ID: ${AGENT_ID}
+  PLATFORM_PROSPECT_DB_URL: ${PLATFORM_PROSPECT_DB_URL}
+  PLATFORM_PROSPECT_DB_API_KEY: ${PLATFORM_PROSPECT_DB_API_KEY}
+steps:
+  - id: provision-schema
+    run: python3 scripts/data_writer.py provision
+    timeout_ms: 30000
+  - id: route-trigger
+    run: "bash -lc 'payload=$(cat || true); route=setup; if printf \"%s\" \"$payload\" | grep -Eiq \"email-reply-received|reply received|email api reply|reply payload|\\\"route\\\"[[:space:]]*:[[:space:]]*\\\"reply\\\"|\\\"event\\\"[[:space:]]*:[[:space:]]*\\\"email-reply-received\\\"\"; then route=reply; elif printf \"%s\" \"$payload\" | grep -Eiq \"campaign-sequence-send|campaign-follow-up-send|sequence send payload|follow-up payload|scheduled action id|\\\"route\\\"[[:space:]]*:[[:space:]]*\\\"send\\\"|\\\"trigger\\\"[[:space:]]*:[[:space:]]*\\\"campaign-(sequence|follow-up)-send\\\"\"; then route=send; fi; printf \"{\\\"route\\\":\\\"%s\\\"}\\n\" \"$route\"'"
+    stdin: $input
+    timeout_ms: 30000
+  - id: guide-campaign-setup
+    run: bash skills/guide-campaign-setup/scripts/run.sh
+    stdin: $input
+    when: "$route-trigger.output.route == 'setup'"
+    timeout_ms: 600000
+  - id: validate-campaign-artifact
+    run: bash skills/validate-campaign-artifact/scripts/run.sh
+    stdin: "$guide-campaign-setup.output"
+    when: "$route-trigger.output.route == 'setup'"
+    timeout_ms: 600000
+  - id: prepare-prospect-list
+    run: bash skills/manage-prospect-approval/scripts/run.sh
+    stdin: "$validate-campaign-artifact.output"
+    when: "$route-trigger.output.route == 'setup'"
+    timeout_ms: 600000
+  - id: prospect-list-approval
+    approval: "Approve the retrieved platform prospect list and pending prospect-list changes for this campaign?"
+    stdin: "$prepare-prospect-list.output"
+    when: "$route-trigger.output.route == 'setup'"
+    timeout_ms: 600000
+  - id: manage-prospect-approval
+    run: bash skills/manage-prospect-approval/scripts/run.sh
+    stdin: "$prospect-list-approval.output"
+    when: "$route-trigger.output.route == 'setup' && $prospect-list-approval.approved"
+    timeout_ms: 600000
+  - id: generate-email-sequence
+    run: bash skills/generate-email-sequence/scripts/run.sh
+    stdin: "$manage-prospect-approval.output"
+    when: "$route-trigger.output.route == 'setup' && $prospect-list-approval.approved"
+    timeout_ms: 600000
+  - id: sequence-send-approval
+    approval: "Approve this email sequence and allow Sarah to schedule approved sends and follow-ups?"
+    stdin: "$generate-email-sequence.output"
+    when: "$route-trigger.output.route == 'setup' && $prospect-list-approval.approved"
+    timeout_ms: 600000
+  - id: schedule-campaign-actions
+    run: bash skills/schedule-campaign-actions/scripts/run.sh
+    stdin: "$sequence-send-approval.output"
+    when: "$route-trigger.output.route == 'setup' && $prospect-list-approval.approved && $sequence-send-approval.approved"
+    timeout_ms: 600000
+  - id: scheduled-send-approval
+    approval: "Approve sending this scheduled campaign email or follow-up now?"
+    stdin: $input
+    when: "$route-trigger.output.route == 'send'"
+    timeout_ms: 600000
+  - id: send-campaign-email
+    run: bash skills/send-campaign-email/scripts/run.sh
+    stdin: "$scheduled-send-approval.output"
+    when: "$route-trigger.output.route == 'send' && $scheduled-send-approval.approved"
+    timeout_ms: 600000
+  - id: capture-email-replies
+    run: bash skills/capture-email-replies/scripts/run.sh
+    stdin: $input
+    when: "$route-trigger.output.route == 'reply'"
+    timeout_ms: 600000
+  - id: review-replies
+    run: bash skills/review-replies/scripts/run.sh
+    stdin: "$capture-email-replies.output"
+    when: "$route-trigger.output.route == 'reply'"
+    timeout_ms: 600000

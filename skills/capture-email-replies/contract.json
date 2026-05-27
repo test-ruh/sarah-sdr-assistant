@@ -1,0 +1,9 @@
+{
+  "id": "capture-email-replies",
+  "requires": { "bins": ["bash", "python3"], "env": ["RUN_ID", "EMAIL_API_BASE_URL", "EMAIL_API_KEY", "PG_CONNECTION_STRING"] },
+  "inputPath": "/tmp/send-campaign-email_${RUN_ID}.json",
+  "outputPath": "/tmp/capture-email-replies_${RUN_ID}.json",
+  "dependsOn": ["send-campaign-email"],
+  "dbWrites": ["result_replies"],
+  "forbidden": ["raw_sql", "hardcoded_secret"]
+}

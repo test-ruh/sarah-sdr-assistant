@@ -1,0 +1,16 @@
+{
+  "name": "campaign-follow-up-send",
+  "enabled": true,
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 * * * *",
+    "tz": "UTC"
+  },
+  "sessionTarget": "main",
+  "wakeMode": "scheduled",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Campaign-defined follow-up payload with campaign ID, prospect ID, follow-up sequence step ID, and scheduled action ID.",
+    "timeoutSeconds": 600
+  }
+}
