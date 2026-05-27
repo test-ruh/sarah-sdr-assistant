@@ -62,6 +62,14 @@ connector:
       - Copy the API key and paste it into the field above.
     site_url: "https://www.emailapi.com/"
     provider_doc_url: "https://www.emailapi.com/docs"
+    agent_vault:
+      enabled: true
+      service:
+        name: email-api
+        host: www.emailapi.com
+      auth:
+        type: bearer
+        token: EMAIL_API_KEY
 channel:
   - key: SLACK_BOT_TOKEN
     label: Slack bot token
@@ -77,3 +85,11 @@ channel:
       - Copy the Bot User OAuth Token and paste it into the field above.
     site_url: "https://slack.com"
     provider_doc_url: "https://api.slack.com/authentication/token-types#bot"
+    agent_vault:
+      enabled: true
+      service:
+        name: slack-api
+        host: slack.com/api/*
+      auth:
+        type: bearer
+        token: SLACK_BOT_TOKEN

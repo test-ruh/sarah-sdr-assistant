@@ -1,0 +1,67 @@
+/**
+ * Global stylesheet for the agent-dashboard skeleton.
+ *
+ * Pulls in the Ruh design-system tokens + animations, then adds a small
+ * baseline reset for the layout grid. Everything else is owned by DS
+ * components — no custom Tailwind classes, no hand-rolled colors.
+ */
+
+@import "@ruh-ai/ruh-design-system/globals.css";
+@import "@ruh-ai/ruh-design-system/animations.css";
+
+/*
+ * Tailwind 4 auto-detects content by scanning project source files but
+ * deliberately skips `node_modules`. The Ruh design-system's components
+ * (Card / Button / Badge / Tabs / etc.) use Tailwind classes internally
+ * — without explicit `@source` glob telling Tailwind to scan them, those
+ * utility classes never make it into the built CSS and DS components
+ * render unstyled (white-on-white was the live-test symptom).
+ *
+ * Two globs cover the DS surface:
+ *   - dist/* — the public ES module entry + helpers
+ *   - dist/chunk-*.js — the lazy-loaded chunks Tailwind also needs to see
+ *
+ * If you add another package whose components ship pre-compiled Tailwind
+ * classes, add an @source line for it too.
+ */
+@source "../../node_modules/@ruh-ai/ruh-design-system/dist/**/*.{js,mjs}";
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Satoshi", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  display: grid;
+  grid-template-columns: 80px 1fr 80px;
+  grid-template-rows: 100%;
+}
+
+/**
+ * Preview-mode watermark — only visible when MSW is intercepting
+ * (`?preview=1` in the URL). Added in a later commit; class is reserved here.
+ */
+.ad-preview-watermark {
+  position: fixed;
+  bottom: 12px;
+  left: 92px;
+  font-size: 10px;
+  color: var(--muted-foreground);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+  z-index: 50;
+}
