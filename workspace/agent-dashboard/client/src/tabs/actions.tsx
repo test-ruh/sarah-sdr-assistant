@@ -208,7 +208,7 @@ export function ActionsTab() {
       )}
 
       <p className="m-0 text-xs text-muted-foreground">
-        Customize this list by editing the <code>actions:</code> block in <code>.openclaw/openclaw.json</code>, or replace this entire tab by editing <code>client/src/tabs/actions.tsx</code>.
+        Customize this list by editing the <code>actions:</code> block in <code>.openclaw/workspace/openclaw.json</code>, or replace this entire tab by editing <code>client/src/tabs/actions.tsx</code>.
       </p>
     </section>
   );

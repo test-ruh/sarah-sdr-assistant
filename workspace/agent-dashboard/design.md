@@ -1,36 +1,40 @@
 # Sarah dashboard design
 
-Sarah 👩‍💼 is a conversational SDR assistant for sales teams that need a guided, approval-aware surface for campaign setup, ICP definition, prospect review, email sequence generation, schedule tracking, Email API sends, reply review, and Slack coordination.
+Sarah is a conversational SDR assistant for sales teams that need guided ICP definition, campaign setup, prospect approval, email sequencing, scheduled sends, Email API reply capture, and Slack/dashboard coordination. The dashboard keeps the operator focused on what Sarah can safely advance now versus what still needs human input.
 
 ## Tabs
 
-- **Overview** — Shows the operator Sarah's current SDR operating picture: active campaign artifacts, approved prospect count, send tracking, reply rate, next scheduled action, ICP validation state, sequence approval progress, and attention items for prospect approvals and reply review. This is the first surface because SDR operators need to know what needs approval and what will send next.
-- **Conversation** — Provides a live dashboard conversation form for starting or updating campaigns. Operators can enter campaign name, ICP criteria, sequence requirements, timing, and a message for Sarah. The tab posts to `/api/sdr/conversation`, which creates or updates the stored campaign artifact and ICP validation work item instead of leaving the surface read-only.
-- **Campaigns** — Reviews stored campaign artifact and configuration records from `result_campaigns`, including status, ICP/goal/timing summary, owner context, and latest update time. This supports campaign artifact review/update before prospect retrieval, sequence generation, and scheduling proceed.
-- **Prospects** — Shows campaign prospects from `result_prospects`, including email, company, fit context, and approval status. The tab emphasizes pending approvals so prospect-list changes remain human-gated.
-- **Sequence** — Shows generated sequence steps from `result_email_sequences` alongside schedule rows from `result_scheduled_actions`, including approval status, timing windows, scheduled send/follow-up time, and action state.
-- **Activity** — Shows Email API send tracking from `result_outbound_sends`, inbound reply review from `result_replies`, provider metadata, and the Slack coordination role for setup updates, approval prompts, send notices, and reply review.
+- **Overview** — The landing surface summarizes active campaign artifacts, approved prospect readiness, outbound Email API progress, replies needing review, next scheduled sends/follow-ups, and human-attention items. It is backed by the campaign, prospect, scheduled-action, send, and reply result tables so the operator can quickly see whether Sarah is blocked by validation, approval, schedule, or reply review.
+- **Conversation** — The dashboard campaign-creation surface for starting or updating campaigns. It captures campaign name, optional campaign ID for update, ICP/value proposition/configuration details, sequence requirements, and timing. Submissions call `POST /api/sdr/conversation`, which upserts durable pending rows into `result_campaigns` and `result_icp_criteria` with preserved operator input and honest pending statuses for Sarah's setup workflow to consume.
+- **Campaigns** — Reviews stored campaign artifacts from `result_campaigns`, including status, configuration, owner/channel context, and update time. This is the audit surface for what Sarah believes is pending validation, waiting on approval, or ready for sequence work.
+- **Prospects** — Shows campaign prospects from `result_prospects` with email, company, profile, and approval status. The tab emphasizes that retrieved prospect-list changes stay held until a sales team member approves them.
+- **Sequence** — Shows generated email steps from `result_email_sequences` and scheduled sends/follow-ups from `result_scheduled_actions`, including approval status, timing metadata, and queue state.
+- **Activity** — Shows outbound send tracking from `result_outbound_sends`, inbound replies from `result_replies`, provider metadata, reply-review status, and Slack/dashboard coordination context for approval prompts and campaign updates.
 
 ## Triggers
 
-- `campaign-sequence-send` — campaign-defined scheduled trigger for approved sequence email sends.
-- `campaign-follow-up-send` — campaign-defined scheduled trigger for approved follow-up sends.
-- `email-reply-received` — Email API reply-event trigger for capturing prospect replies and preparing reply review.
+- Campaign sequence send time — sends approved sequence email through Email API at the campaign-defined scheduled time.
+- Campaign follow-up time — sends approved follow-up email through Email API at the campaign-defined scheduled time.
+- Email reply received — captures Email API reply payload, stores reply history, and makes the reply available for review and Slack coordination.
 
 ## Sidebar additions
 
-No custom sidebar additions are needed. Sarah's operator workflow is fully represented by the dashboard tabs plus the platform-provided Actions surface.
+None. Sarah's operator workflow fits the dashboard tabs and the platform-managed Actions entry.
 
 ## Server endpoints
 
-- `GET /api/sdr/overview` — returns campaigns, ICP criteria, prospects, sequence steps, scheduled actions, outbound sends, and replies for the landing metrics and attention queue.
-- `GET /api/sdr/campaigns` — returns stored campaign artifacts and configuration for campaign review.
-- `POST /api/sdr/campaigns` — creates or updates a campaign artifact in `result_campaigns` from dashboard-provided campaign configuration.
-- `POST /api/sdr/conversation` — records a guided dashboard campaign setup/update, upserts the campaign artifact, and adds ICP validation state when ICP text is provided.
-- `GET /api/sdr/prospects?campaignId=<id>` — returns approved and pending prospects for all campaigns or a selected campaign.
-- `GET /api/sdr/sequence?campaignId=<id>` — returns generated email sequence content and scheduled send/follow-up rows.
-- `GET /api/sdr/activity?campaignId=<id>` — returns Email API outbound send records and inbound reply records for activity and reply review.
+- `GET /api/sdr/overview` — returns recent campaigns, prospects, scheduled actions, outbound sends, and replies for Sarah's overview metrics and next-action cards.
+- `GET /api/sdr/conversation` — returns recent pending/active campaign handoffs and ICP validation rows so the conversation tab can show durable saved artifacts.
+- `POST /api/sdr/conversation` — validates required campaign name and setup brief, preserves the submitted dashboard payload, upserts a `pending_runtime_validation` row into `result_campaigns`, upserts a `pending_sarah_validation` row into `result_icp_criteria`, and returns the saved artifacts for Sarah's setup workflow handoff.
+- `GET /api/sdr/campaigns` — returns stored campaign artifacts and configuration ordered by last update.
+- `GET /api/sdr/prospects?status=<status>` — returns campaign prospects, optionally filtered by approval status, for the prospect approval workflow.
+- `GET /api/sdr/sequence` — returns generated email sequence steps and scheduled campaign sends/follow-ups.
+- `GET /api/sdr/activity` — returns recent campaigns, Email API outbound send tracking, and inbound reply review data for activity and coordination views.
+
+## Runtime and auth consistency
+
+The dashboard reflects Sarah's saved workflow and environment requirements: platform prospect database access, Email API send/reply tracking, Slack coordination, and runtime-managed `agent_vault` bearer credentials for Email API and Slack secrets. The dashboard does not expose or store secret values.
 
 ## v2 Deferrals
 
-No v2-tagged Custom Features were present in the PRD Dashboard Requirements.
+No v2-tagged Custom Features were present in the approved PRD Dashboard Requirements.
